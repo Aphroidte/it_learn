@@ -44,7 +44,7 @@ git push
 ```
 
 <!--![PNG-添加子模块命令执行效果图Base64][PNG-添加子模块命令执行效果图]-->
-![PNG-添加子模块命令执行效果图Base64](./pic/git_learn/PNG-添加子模块命令执行效果图.png)
+![PNG-添加子模块命令执行效果图Base64](../pic/git_learn/PNG-添加子模块命令执行效果图.png)
 
 例子：
 
@@ -57,7 +57,7 @@ git submodule add https://git.oschina.net/gaofeifps/leg.git
 这时查看下状态会多两个文件（git status命令）：一个是子模块、另一个是 git submodule 的配置文件。
 
 <!--![PNG-添加子模块后多出了两个文件Base64][PNG-添加子模块后多出了两个文件]-->
-![PNG-添加子模块后多出了两个文件Base64](./pic/git_learn/PNG-添加子模块后多出了两个文件.jfif)
+![PNG-添加子模块后多出了两个文件Base64](../pic/git_learn/PNG-添加子模块后多出了两个文件.jfif)
 
 > 注：`.gitmodules` 文件中会记录子模块的名称与源代码url
 
@@ -204,15 +204,15 @@ git push origin
 
 #### 生成个人令牌
 
-![PNG-生成个人令牌步骤1Base64](./pic/git_learn/git_person_token_setp1.png)
+![PNG-生成个人令牌步骤1Base64](../pic/git_learn/git_person_token_setp1.png)
 
-![PNG-生成个人令牌步骤2Base64](./pic/git_learn/git_person_token_setp2.png)
+![PNG-生成个人令牌步骤2Base64](../pic/git_learn/git_person_token_setp2.png)
 
-![PNG-生成个人令牌步骤3Base64](./pic/git_learn/git_person_token_setp3.png)
+![PNG-生成个人令牌步骤3Base64](../pic/git_learn/git_person_token_setp3.png)
 
 下面的 *scopes* 没头绪就先全选上：
 
-![PNG-生成个人令牌步骤4Base64](./pic/git_learn/git_person_token_setp4.png)
+![PNG-生成个人令牌步骤4Base64](../pic/git_learn/git_person_token_setp4.png)
 
 #### 使用个人令牌
 
