@@ -24,6 +24,7 @@
     - [2.1. cmake中使用protobuf/protobuf-c命令来编译.proto文件](#21-cmake中使用protobufprotobuf-c命令来编译proto文件)
       - [2.1.1. 能正常运行的cmake代码](#211-能正常运行的cmake代码)
       - [2.1.2. 参考的文档: CMake 中使用 protobuf/protobuf-c](#212-参考的文档-cmake-中使用-protobufprotobuf-c)
+    - [2.2. cmake生成compile_commands.json](#22-cmake生成compile_commandsjson)
   - [3. Q&A](#3-qa)
     - [3.1. add_custom_command 不执行](#31-add_custom_command-不执行)
 
@@ -531,6 +532,16 @@ include_directories(${PROTO_GEN_CXX_INCLUDE_DIRS})
 ```
 
 在需要使用 proto 的目标 CMakeLists.txt 脚本中，只需要目标链接 `proto_gen_cxx` 或 `proto_gen_c` 即可。
+
+### 2.2. cmake生成compile_commands.json
+
+通过设置 `CMAKE_EXPORT_COMPILE_COMMANDS` 来让 cmake 生成compile_commands.json。
+
+```cmake
+cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+```
+
+> 注：compile_commands.json 的作用：提高一些 IDE 的代码跳转与补全等功能(如：vscode、ccls、Sourcetrail)。
 
 ## 3. Q&A
 
