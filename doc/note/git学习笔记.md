@@ -14,14 +14,19 @@
       - [2.3.2. git commit多行备注](#232-git-commit多行备注)
       - [2.3.3. git commit递交的推荐格式](#233-git-commit递交的推荐格式)
     - [2.4. git增删改](#24-git增删改)
+    - [2.5. reset命令](#25-reset命令)
+      - [2.5.1. reset的语法格式与基本用法](#251-reset的语法格式与基本用法)
+      - [2.5.2. reset的样例](#252-reset的样例)
+        - [2.5.2.1. 拉取代码到最新版本](#2521-拉取代码到最新版本)
+        - [拉取代码到指定版本](#拉取代码到指定版本)
   - [3. git配置SSH](#3-git配置ssh)
     - [3.1. git配置SSH时遇到的问题](#31-git配置ssh时遇到的问题)
       - [3.1.1. clone时反复要求输入密码，无论输入的密码是否正确都会报错](#311-clone时反复要求输入密码无论输入的密码是否正确都会报错)
       - [3.1.2. 读取密钥文件报权限错误](#312-读取密钥文件报权限错误)
   - [4. Q&A](#4-qa)
     - [4.1. remote: Support for password authentication was removed on August 13, 2021. Please use a perso](#41-remote-support-for-password-authentication-was-removed-on-august-13-2021-please-use-a-perso)
-      - [生成个人令牌](#生成个人令牌)
-      - [使用个人令牌](#使用个人令牌)
+      - [4.1.1. 生成个人令牌](#411-生成个人令牌)
+      - [4.1.2. 使用个人令牌](#412-使用个人令牌)
 
 <!-- /TOC -->
 
@@ -169,6 +174,59 @@ git commit 修改的文件 -m "递交信息"
 git push origin
 ```
 
+### 2.5. reset命令
+
+#### 2.5.1. reset的语法格式与基本用法
+*reset* 命令一般结合 *pull* 命令来使用，设置当前节点到指定版本，然后把该版本的代码拉下来，从而达到回退本地代码或更新本地代码的效果。
+
+语法格式：
+
+```bash
+# --mixed 为默认，可以不用带该参数，用于重置暂存区的文件与上一次的提交(commit)保持一致，工作区文件内容保持不变。
+git reset [--soft | --mixed | --hard] [HEAD]
+
+#样例：
+## --mixed 选项
+git reset HEAD^            # 回退所有内容到上一个版本  
+git reset HEAD^ hello.php  # 回退 hello.php 文件的版本到上一个版本  
+git reset  052e            # 回退到指定版本
+
+## --soft 选项
+git reset --soft HEAD~3    # 回退上上上一个版本 
+
+## --hard 选项：撤销工作区中所有未提交的修改内容，将暂存区与工作区都回到上一次版本，并删除之前的所有信息提交
+git reset --hard HEAD~3    # 回退上上上一个版本  
+git reset –hard bae128     # 回退到某个版本回退点之前的所有信息。 
+git reset --hard origin/master    # 将本地的状态回退到和远程的一样 
+```
+
+> 注1：谨慎使用 –hard 参数，它会删除回退点之前的所有信息。
+>
+> 注2：HEAD 说明：
+>
+> 1. HEAD 或 HEAD~0 表示当前版本
+> 2. HEAD^ 或 HEAD~1 表示上一个版本
+> 3. HEAD^^ 或 HEAD~2 表示上上个版本
+> 4. 以此类推...
+
+#### 2.5.2. reset的样例
+
+##### 2.5.2.1. 拉取代码到最新版本
+
+```bash
+git fetch -f
+git reset --hard origin/master(或 origin/HEAD)
+git pull
+```
+
+##### 拉取代码到指定版本
+
+```bash
+git fetch -f
+git reset --hard origin/版本号
+git pull
+```
+
 ## 3. git配置SSH
 
 1. 在本地生成 SSH key：`ssh-keygen -b 4096 -t rsa -f %USERPROFILE%\.ssh\id_rsa -q -P ""` 或 `ssh-keygen -t ed25519 -C "你的邮箱/git的用户名"`。（建议生成 ed25519 类型的key，因为它比 rsa 类型更安全。并且高版本的git 移除了对 rsa 类型的 SSH Key 的支持，采用该类型的 key 会导致 git clone时反复要求输入密码，并且输入任何密码都会提示错误。）
@@ -202,7 +260,7 @@ git push origin
 
 意思是：自从21年8月13后不再支持用户名密码的方式验证了，需要创建个人访问令牌(personal access token)。
 
-#### 生成个人令牌
+#### 4.1.1. 生成个人令牌
 
 ![PNG-生成个人令牌步骤1Base64](../pic/git_learn/git_person_token_setp1.png)
 
@@ -214,7 +272,7 @@ git push origin
 
 ![PNG-生成个人令牌步骤4Base64](../pic/git_learn/git_person_token_setp4.png)
 
-#### 使用个人令牌
+#### 4.1.2. 使用个人令牌
 
 修改现有项目的 *remote*
 
