@@ -20,11 +20,13 @@
       - [1.3.1. cmake_minimum_required语法与作用](#131-cmake_minimum_required语法与作用)
       - [1.3.2. cmake_minimum_required的更多细节](#132-cmake_minimum_required的更多细节)
     - [1.4. 定义宏](#14-定义宏)
+    - [1.5. add_dependencies控制编译顺序](#15-add_dependencies控制编译顺序)
   - [2. 使用样例](#2-使用样例)
     - [2.1. cmake中使用protobuf/protobuf-c命令来编译.proto文件](#21-cmake中使用protobufprotobuf-c命令来编译proto文件)
       - [2.1.1. 能正常运行的cmake代码](#211-能正常运行的cmake代码)
       - [2.1.2. 参考的文档: CMake 中使用 protobuf/protobuf-c](#212-参考的文档-cmake-中使用-protobufprotobuf-c)
     - [2.2. cmake生成compile_commands.json](#22-cmake生成compile_commandsjson)
+    - [2.3. cmake控制编译顺序](#23-cmake控制编译顺序)
   - [3. Q&A](#3-qa)
     - [3.1. add_custom_command 不执行](#31-add_custom_command-不执行)
 
@@ -363,6 +365,21 @@ add_definitions(-DLIBEVENT_VERSION_NUMBER=0x02010800)
 add_compile_definitions(MG_ENABLE_OPENSSL=1)
 ```
 
+### 1.5. add_dependencies控制编译顺序
+
+语法：
+
+```cmake
+add_dependencies(<target> [<target-dependency>]...)
+```
+
+`add_dependencies` 的作用：声明 \<target\> 依赖于参数 [\<target-dependency\>]，以确保它们能够在 \<target\> 之前进行构建。\<target\> 是由 `add_executable()`、`add_library()`或 `add_custom_target()` 命令创建的目标。
+
+> 注：3.3新版功能:允许向接口库添加依赖项。
+>
+> 1. 请参阅 `add_custom_target()` 和 `add_custom_command()` 命令的 *DEPENDS* 选项，以在自定义规则中添加文件级依赖项。
+> 2. 请参阅 *OBJECT_DEPENDS* 源文件属性来向对象文件添加文件级依赖项。
+
 ## 2. 使用样例
 
 ### 2.1. cmake中使用protobuf/protobuf-c命令来编译.proto文件
@@ -542,6 +559,117 @@ cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 ```
 
 > 注：compile_commands.json 的作用：提高一些 IDE 的代码跳转与补全等功能(如：vscode、ccls、Sourcetrail)。
+
+### 2.3. cmake控制编译顺序
+
+有以下cmake文件：
+
+```cmake
+# component/CMakeLists.txt
+{
+    cmake_minimum_required(VERSION 2.8)
+
+    # 设置项目名称
+    set(THIS_PROJECT_NAME component)
+    project( ${THIS_PROJECT_NAME} "CXX")
+
+    # ...
+    # 连接成静态库
+    add_library(${THIS_PROJECT_NAME} ${MAIN_SRC_DIR})
+}
+
+########################################################
+# proto/CMakeLists.txt
+{
+    cmake_minimum_required(VERSION 2.8)
+
+    # 设置项目名称
+    set(THIS_PROJECT_NAME proto)
+    project( ${THIS_PROJECT_NAME} "CXX")
+
+    # ...
+    # 连接成静态库
+    add_library(${THIS_PROJECT_NAME} ${OUTPUT_SOURCES_CXX})
+}
+
+########################################################
+# src/common/CMakeLists.txt
+{
+    cmake_minimum_required(VERSION 2.8)
+
+    # 设置项目名称
+    set(THIS_PROJECT_NAME common)
+    project( ${THIS_PROJECT_NAME} "CXX")
+
+    # ...
+    # 添加子项目头文件，调用子项目的CMakeLists.txt，生成静态库
+    ## 设置 libproto.a 子项目所在目录
+    include_directories(${PROJECT_SOURCE_DIR}/../../proto/)
+    add_subdirectory("${PROJECT_SOURCE_DIR}/../../proto/" "${PROJECT_SOURCE_DIR}/../../proto/")
+    link_directories(${PROJECT_SOURCE_DIR}/../../proto)
+
+    # ...
+    # 连接成静态库
+    add_library(${THIS_PROJECT_NAME} ${MAIN_SRC_DIR})
+    # ...
+}
+
+########################################################
+# src/db/CMakeLists.txt
+{
+    cmake_minimum_required(VERSION 2.8)
+
+    # 设置项目名称
+    set(THIS_PROJECT_NAME db)
+    project( ${THIS_PROJECT_NAME} "CXX")
+
+    # ...
+    # 添加子项目头文件，调用子项目的CMakeLists.txt，生成静态库
+    ## 设置 libcommon.a 子项目所在目录
+    include_directories(${PROJECT_SOURCE_DIR}/../common/)
+    add_subdirectory("${PROJECT_SOURCE_DIR}/../common/" "${PROJECT_SOURCE_DIR}/../common/")
+    link_directories(${PROJECT_SOURCE_DIR}/../common/)
+
+    ## 设置 libcomponent.a 子项目所在目录
+    include_directories(${PROJECT_SOURCE_DIR}/../../component/)
+    add_subdirectory("${PROJECT_SOURCE_DIR}/../../component/" "${PROJECT_SOURCE_DIR}/../../component/")
+    link_directories(${PROJECT_SOURCE_DIR}/../../component)
+    # ...
+
+    # 连接成静态库
+    add_library(${THIS_PROJECT_NAME} ${MAIN_SRC_DIR})
+    # ...
+}
+```
+
+主项目的 *src/ems_write/CMakeLists.txt* 如下
+
+```cmake
+cmake_minimum_required(VERSION 2.8)
+
+# 设置项目名称
+set(THIS_PROJECT_NAME futc_ems_write)
+project(${THIS_PROJECT_NAME} "CXX")
+
+# ...
+## 设置 libdb.a 子项目所在目录
+include_directories(${PROJECT_SOURCE_DIR}/../db/)
+add_subdirectory("${PROJECT_SOURCE_DIR}/../db/" "${PROJECT_SOURCE_DIR}/../db/")
+link_directories(${PROJECT_SOURCE_DIR}/../db)
+
+# ...
+# 连接成动态库
+add_library(${THIS_PROJECT_NAME} SHARED ${MAIN_SRC_DIR})
+
+# ...
+# note: 设置依赖关系，编译时先编译 proto -> component -> common！
+add_dependencies(${THIS_PROJECT_NAME} proto component common)
+## 链接子项目 component/、 proto/、common/ 跟 db/ 生成的静态库
+target_link_libraries(${THIS_PROJECT_NAME} PUBLIC -ldb -lcommon -lproto -lcomponent)
+# ..
+```
+
+在主项目的 *CMakeLists.txt* 的 `add_library` 跟 `target_link_libraries` 之间，通过 `add_dependencies` 指明主项目的 target = futc_ems_write 依赖于子项目的 targets = proto、component、common，所以编译时会先编译这些子项目！
 
 ## 3. Q&A
 
