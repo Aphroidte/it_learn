@@ -3,40 +3,108 @@
 <!-- TOC -->
 
 - [cmake学习笔记](#cmake学习笔记)
-  - [1. 常见语法](#1-常见语法)
-    - [1.1. 控制逻辑: if-else](#11-控制逻辑-if-else)
-      - [1.1.1. if-else的语法以及注意事项](#111-if-else的语法以及注意事项)
-      - [1.1.2. 如何设置if-else中的条件变量](#112-如何设置if-else中的条件变量)
-    - [1.2. project语句](#12-project语句)
-      - [1.2.1. project语法与作用](#121-project语法与作用)
-      - [1.2.2. project命令解析](#122-project命令解析)
-        - [1.2.2.1. project-指定工程名称](#1221-project-指定工程名称)
-        - [1.2.2.2. project-指定工程的版本号](#1222-project-指定工程的版本号)
-        - [1.2.2.3. project-对工程的文本描述](#1223-project-对工程的文本描述)
-        - [1.2.2.4. project-指定工程的主页URL](#1224-project-指定工程的主页url)
-        - [1.2.2.5. project-选择构建工程需要的编程语言](#1225-project-选择构建工程需要的编程语言)
-      - [1.2.3. project命令的更多细节](#123-project命令的更多细节)
-    - [1.3. cmake_minimum_required语句](#13-cmake_minimum_required语句)
-      - [1.3.1. cmake_minimum_required语法与作用](#131-cmake_minimum_required语法与作用)
-      - [1.3.2. cmake_minimum_required的更多细节](#132-cmake_minimum_required的更多细节)
-    - [1.4. 定义宏](#14-定义宏)
-    - [1.5. add_dependencies控制编译顺序](#15-add_dependencies控制编译顺序)
-  - [2. 使用样例](#2-使用样例)
-    - [2.1. cmake中使用protobuf/protobuf-c命令来编译.proto文件](#21-cmake中使用protobufprotobuf-c命令来编译proto文件)
-      - [2.1.1. 能正常运行的cmake代码](#211-能正常运行的cmake代码)
-      - [2.1.2. 参考的文档: CMake 中使用 protobuf/protobuf-c](#212-参考的文档-cmake-中使用-protobufprotobuf-c)
-    - [2.2. cmake生成compile_commands.json](#22-cmake生成compile_commandsjson)
-    - [2.3. cmake控制编译顺序](#23-cmake控制编译顺序)
-  - [3. Q&A](#3-qa)
-    - [3.1. add_custom_command 不执行](#31-add_custom_command-不执行)
+  - [1. cmake文件的基本框架与模板](#1-cmake文件的基本框架与模板)
+  - [2. 常见语法](#2-常见语法)
+    - [2.1. 控制逻辑: if-else](#21-控制逻辑-if-else)
+      - [2.1.1. if-else的语法以及注意事项](#211-if-else的语法以及注意事项)
+      - [2.1.2. 如何设置if-else中的条件变量](#212-如何设置if-else中的条件变量)
+    - [2.2. project语句](#22-project语句)
+      - [2.2.1. project语法与作用](#221-project语法与作用)
+      - [2.2.2. project命令解析](#222-project命令解析)
+        - [2.2.2.1. project-指定工程名称](#2221-project-指定工程名称)
+        - [2.2.2.2. project-指定工程的版本号](#2222-project-指定工程的版本号)
+        - [2.2.2.3. project-对工程的文本描述](#2223-project-对工程的文本描述)
+        - [2.2.2.4. project-指定工程的主页URL](#2224-project-指定工程的主页url)
+        - [2.2.2.5. project-选择构建工程需要的编程语言](#2225-project-选择构建工程需要的编程语言)
+      - [2.2.3. project命令的更多细节](#223-project命令的更多细节)
+    - [2.3. cmake_minimum_required语句](#23-cmake_minimum_required语句)
+      - [2.3.1. cmake_minimum_required语法与作用](#231-cmake_minimum_required语法与作用)
+      - [2.3.2. cmake_minimum_required的更多细节](#232-cmake_minimum_required的更多细节)
+    - [2.4. 定义宏](#24-定义宏)
+    - [2.5. add_dependencies控制编译顺序](#25-add_dependencies控制编译顺序)
+  - [3. 使用样例](#3-使用样例)
+    - [3.1. cmake中使用protobuf/protobuf-c命令来编译.proto文件](#31-cmake中使用protobufprotobuf-c命令来编译proto文件)
+      - [3.1.1. 能正常运行的cmake代码](#311-能正常运行的cmake代码)
+      - [3.1.2. 参考的文档: CMake 中使用 protobuf/protobuf-c](#312-参考的文档-cmake-中使用-protobufprotobuf-c)
+    - [3.2. cmake生成compile_commands.json](#32-cmake生成compile_commandsjson)
+    - [3.3. cmake控制编译顺序](#33-cmake控制编译顺序)
+  - [4. Q&A](#4-qa)
+    - [4.1. add_custom_command 不执行](#41-add_custom_command-不执行)
 
 <!-- /TOC -->
 
-## 1. 常见语法
+## 1. cmake文件的基本框架与模板
 
-### 1.1. 控制逻辑: if-else
+一个常见的 *CMakeLists.txt* 文件的基本框架由以下四部分组成：
 
-#### 1.1.1. if-else的语法以及注意事项
+1. 声明支持的版本与项目名
+2. 声明包含的头文件、静态库以及动态库的路径
+3. 引入需要编译的文件，声明需要构建的目标
+4. 声明需要链接的静态库以及动态库
+
+```cmake
+# 1. 第一步：第一条合法的语句必须是 cmake_minimum_required
+cmake_minimum_required(VERSION 2.8)
+## 然后声明项目名，并以项目名作为构建的 target 名
+set(THIS_PROJECT_NAME xxx)
+project(${THIS_PROJECT_NAME})
+
+######################################################################
+# 2. 第二步：声明头文件路径以及需要链接的静态库/动态库的路径
+## 2.1 对于包含路径较多的项目，可想通过 set 命令设置好引用的库的路径
+set(FIS_LIB_BASE_PATH ${PROJECT_SOURCE_DIR}/../../fis_libs/)
+set(THRID_PARTY_BASE_PATH /xxx/xxx/xxx)
+
+## 2.2 设置包含的头文件的路径
+include_directories(${FIS_LIB_BASE_PATH}/include)
+include_directories(${THRID_PARTY_BASE_PATH}/include)
+
+## 2.3 设置需要链接的静态库/动态库所在的路径
+link_directories(${FIS_LIB_BASE_PATH}/libs)
+link_directories(${THRID_PARTY_BASE_PATH}/libs)
+
+######################################################################
+# 3. 第三步：引入需要编译的文件，声明需要编译目标
+aux_source_directory(源文件目录 保存源文件的变量A)
+
+#---------------------------------------------------------------------
+## 【可选】编译 proto 文件，生成对应的 cxx 源文件
+### 详见 [3.1. cmake中使用protobuf/protobuf-c命令来编译.proto文件]
+
+#---------------------------------------------------------------------
+## 【可选】包含需要用到的子项目
+### 注：子项目必须也是通过 cmake 来管理的
+include_directories(子项目头文件所在的路径)
+### 注：如果子项目不在主项目的子目录下，则需要传入两次全路径，否则会报错。否则，传入相对于主项目的CMakeLists.txt的相对路径即可
+#add_subdirectory(子项目CMakeLists.txt所在的路径 子项目CMakeLists.txt所在的路径)
+add_subdirectory(./xxx/xxx)
+
+#---------------------------------------------------------------------
+## 编译成动态库
+#add_library(${THIS_PROJECT_NAME} SHARED ${保存源文件的变量A} 【${编译proto文件生成的源文件变量}】)
+## 编译静态库
+#add_library(${THIS_PROJECT_NAME} SHARED ${保存源文件的变量A} 【${编译proto文件生成的源文件变量}】)
+## 编译成可执行文件
+add_executable(${THIS_PROJECT_NAME} PUBLIC ${保存源文件的变量A} 【${编译proto文件生成的源文件变量}】)
+
+######################################################################
+# 4. 第四步：声明需要链接静态库/动态库
+#---------------------------------------------------------------------
+## 【可选】如果包含了需要用到的子项目，可以通过 add_dependencies 来声明主项目与子项目的依赖关系，即声明子项目与主项目间的编译顺序
+add_dependencies(${THIS_PROJECT_NAME} sub_proj1 sub_proj2 sub_proj3)
+
+#---------------------------------------------------------------------
+## 链接静态库/动态库
+target_link_libraries(${THIS_PROJECT_NAME} PUBLIC -lxxxx -lYYYY)
+target_link_libraries(${THIS_PROJECT_NAME} PUBLIC -lBBBB -lAAAA)
+target_link_libraries(${THIS_PROJECT_NAME} PUBLIC -lcccc -ldddd)
+```
+
+## 2. 常见语法
+
+### 2.1. 控制逻辑: if-else
+
+#### 2.1.1. if-else的语法以及注意事项
 
 语法：
 
@@ -119,7 +187,7 @@ else()
 endif()
 ```
 
-#### 1.1.2. 如何设置if-else中的条件变量
+#### 2.1.2. 如何设置if-else中的条件变量
 
 可以在 cmake 的时候通过 `-D` 选项设置 cmake 中出现的变量，如：
 
@@ -131,7 +199,7 @@ if(CMAKE_BUILD_TYPE AND (CMAKE_BUILD_TYPE STREQUAL "Debug"))
 # 如果是通过cmake -DCMAKE_BUILD_TYPE=Debug .. 编译，if命令本身会引用变量CMAKE_BUILD_TYPE，其值为Debug，if条件判断为真；
 ```
 
-### 1.2. project语句
+### 2.2. project语句
 
 [//]:参考链接：
 [//]:https://www.jianshu.com/p/cdd6e56c2422
@@ -139,7 +207,7 @@ if(CMAKE_BUILD_TYPE AND (CMAKE_BUILD_TYPE STREQUAL "Debug"))
 [//]:https://cmake.org/cmake/help/latest/variable/CMAKE_PROJECT_NAME.html#variable:CMAKE_PROJECT_NAME
 [//]:https://cmake.org/cmake/help/latest/variable/CMAKE_PROJECT_VERSION.html#variable:CMAKE_PROJECT_VERSION
 
-#### 1.2.1. project语法与作用
+#### 2.2.1. project语法与作用
 
 语法格式：
 
@@ -155,9 +223,9 @@ project(<PROJECT-NAME>
 
 作用：**指定 cmake 工程的名称、版本号(`VERSION` 关键字)、简短的描述(`DESCRIPTION` 关键字)、主页URL(`HOMEPAGE_URL` 关键字) 以及编译工程使用的语言(`LANGUAGES` 关键字)**
 
-#### 1.2.2. project命令解析
+#### 2.2.2. project命令解析
 
-##### 1.2.2.1. project-指定工程名称
+##### 2.2.2.1. project-指定工程名称
 
 ```cmake
 # CMakeLists.txt
@@ -228,7 +296,7 @@ message (">>>>>> sub CMAKE_PROJECT_NAME: ${CMAKE_PROJECT_NAME}")
 
 > 注：因此可以看成带 CMAKE 前缀的变量只属于顶层的 CMakeLists.txt 工程，带 \<PROJECT_NAME\> 为指定（特定）工程名的变量，其余的即为当前正在构建的工程变量，下面在讲到project其他选项时也遵循该规则
 
-##### 1.2.2.2. project-指定工程的版本号
+##### 2.2.2.2. project-指定工程的版本号
 
 语法格式为：`VERSION <version>`，其中 `<version>` 是由一组由 "." 分隔的，非负整数(最多 4 个数字，最少 1 个数字)组成的字符串，格式为 `<major>[.<minor>[.<patch>[.<tweak>]]]`，如：1.2.3.4。样例如下：
 
@@ -254,7 +322,7 @@ project (mytest VERSION 1.2.3.4)
 
 上述带 *\<PROJECT_NAME\>* 的变量存储的是指定工程名下版本号，不带的表示当前正在调用的工程的版本号。*XXX_MAJOR、XXX_MINOR、XXX_PATCH、XXX_TWEAK* 分别与点分版本号 `<major>[.<minor>[.<patch>[.<tweak>]]]` 对应。当然，如果 CMakeLists.txt 位于顶层目录，`CMAKE_PROJECT_VERSION` 存储的是顶层 CMakeLists.txt 中 `project` 命令指定的版本号，不会随着调用工程的变化而变化。这些变量的使用与 1 中的工程名变量没什么区别，可以仿照将上述变量打印出来看下，此处就不在赘述。
 
-##### 1.2.2.3. project-对工程的文本描述
+##### 2.2.2.3. project-对工程的文本描述
 
 语法格式为：`DESCRIPTION <project description string>`，其中 `<project description string>` 是一段描述，不建议太长。样例如下：
 
@@ -270,7 +338,7 @@ project (mytest DESCRIPTION “This is mytest project.”)
 - `<PROJECT-NAME>_DESCRIPTION`
 - `CMAKE_PROJECT_DESCRIPTION`
 
-##### 1.2.2.4. project-指定工程的主页URL
+##### 2.2.2.4. project-指定工程的主页URL
 
 基本用法如下：
 
@@ -286,7 +354,7 @@ project (mytest HOMEPAGE_URL “https://www.XXX(示例).com”)
 - `<PROJECT-NAME>_HOMEPAGE_URL`
 - `CMAKE_PROJECT_HOMEPAGE_URL`
 
-##### 1.2.2.5. project-选择构建工程需要的编程语言
+##### 2.2.2.5. project-选择构建工程需要的编程语言
 
 该选项可以有两种调用方式：
 
@@ -309,15 +377,15 @@ project (mytest VERSION 1.2.3.4 LANGUAGES “CXX”)
 
 **该命令的实质是 cmake 会使用 `LANGUAGES` 的语言选项来检查 `CMAKE_XXX_COMPILER` 指定的编译器是否存在，以便工程能正确的被构建。**
 
-#### 1.2.3. project命令的更多细节
+#### 2.2.3. project命令的更多细节
 
 1. `project` 命令并非必不可少，如果没有调用 `project` 命令，cmake 仍然会生成一个默认工程名为 "project" 的工程，以及对应的变量（如：`PROJECT_NAME`、`CMAKE_PROJECT`、`PROJECT_SOURCE_DIR`、`<PROJECT-NAME>_SOURCE_DIR`等）。但是 `VERSION`、`DESCRIPTION`、`HOMEPAGE_URL` 等变量不会被赋值。（`LANGUAGES` 除外，即使不指定，默认语言为 C 和 CXX）
 2. `project` 命令需要放置在其他命令之前，`cmake_minimum_required` 命令之后（[cmake_minimum_required命令参考](https://www.jianshu.com/p/7535bff0e894)）
 3. 如果多次调用 `project` 命令，那么 `CMAKE_PROJECT_NAME`、`CMAKE_PROJECT_VERSION`、`CMAKE_PROJECT_DESCRIPTION`、`CMAKE_PROJECT_HOMEPAGE_URL` 等变量是以最近一次调用的 `project` 命令为准。
 
-### 1.3. cmake_minimum_required语句
+### 2.3. cmake_minimum_required语句
 
-#### 1.3.1. cmake_minimum_required语法与作用
+#### 2.3.1. cmake_minimum_required语法与作用
 
 语法格式：
 
@@ -335,7 +403,7 @@ cmake_minimum_required(VERSION <min>[...<max>] [FATAL_ERROR])
    - [ ] `max`：指定 *cmake* 要求的最高版本号，要求该参数不能小于 `min`。如果 *cmake* 是 3.12 之前的版本，`...<max>` 会被忽略，按照 `min` 指定的版本参数运行，相当于 `cmake_minimum_required(VERSION <min>...3.12)`
    - [ ] `FATAL_ERROR`：该参数在 *cmake* 的 2.6 及以后的版本被忽略，在 *cmake* 的 2.4 及以前的版本，需要指明该参数，以便 *cmake* 能提示失败而不仅仅是一个警告。
 
-#### 1.3.2. cmake_minimum_required的更多细节
+#### 2.3.2. cmake_minimum_required的更多细节
 
 1. `cmake_minimum_required` 命令要求放在顶层的 *CMakeLists.txt* 文件的**最开始**，在其他命名执行前调用，这是因为后续的命令的行为表现可能跟版本有关系。
 2. 如果在函数内调用 `cmake_minimum_required`，那么这个命令只在函数内起作用。
@@ -344,7 +412,7 @@ cmake_minimum_required(VERSION <min>[...<max>] [FATAL_ERROR])
    - 每一种新的策略机制（*cmake* 版本更新带来的变化）用形如 `CMP<NNN>` 来标识，其中的 `NNN` 是一个整数，每一种的策略机制有 `NEW` 和 `OLD` 两种行为表现，调用方式为 `cmake_policy(SET CMP<NNN> OLD)` 或 `cmake_policy(SET CMP<NNN> NEW)`。
    - 对于当前运行 *cmake* 版本已知的所有策略，若是在 `min` （或 `max`：运行的版本高于 `max` 时）以及 `min` 之前的版本引入的，都会被设置为 `NEW` 行为，在 `min` 之后版本引入的策略，不会被设置，需要显式指定（调用 `cmake_policy` 或者 `CMAKE_POLICY_DEFAULT_CMP<NNNN>`）。
 
-### 1.4. 定义宏
+### 2.4. 定义宏
 
 *CMake* 中定义宏有三种方式：`add_definitions`、`add_compile_definitions`、`target_compile_definitions`
 
@@ -365,7 +433,7 @@ add_definitions(-DLIBEVENT_VERSION_NUMBER=0x02010800)
 add_compile_definitions(MG_ENABLE_OPENSSL=1)
 ```
 
-### 1.5. add_dependencies控制编译顺序
+### 2.5. add_dependencies控制编译顺序
 
 语法：
 
@@ -380,11 +448,11 @@ add_dependencies(<target> [<target-dependency>]...)
 > 1. 请参阅 `add_custom_target()` 和 `add_custom_command()` 命令的 *DEPENDS* 选项，以在自定义规则中添加文件级依赖项。
 > 2. 请参阅 *OBJECT_DEPENDS* 源文件属性来向对象文件添加文件级依赖项。
 
-## 2. 使用样例
+## 3. 使用样例
 
-### 2.1. cmake中使用protobuf/protobuf-c命令来编译.proto文件
+### 3.1. cmake中使用protobuf/protobuf-c命令来编译.proto文件
 
-#### 2.1.1. 能正常运行的cmake代码
+#### 3.1.1. 能正常运行的cmake代码
 
 > 详见：[新人练习项目](https://gitlab.futunn.com/arnicedeng/my_practice/-/blob/main/final_day/logic_service/logic/ar_logic/CMakeLists.txt)
 
@@ -446,7 +514,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../spp_frame/client/bin/)
 add_library(logic_service SHARED ${MAIN_SRC_DIR} ${SUB_PROTO_DIR} ${SUB_ST_CLIENT_DIR} ${SUB_SRC_DIR} ${OUTPUT_SOURCES_CXX})
 ```
 
-#### 2.1.2. 参考的文档: CMake 中使用 protobuf/protobuf-c
+#### 3.1.2. 参考的文档: CMake 中使用 protobuf/protobuf-c
 
 > [参考文档](https://tisyang.github.io/post/2020-10-05-cmake-protobuf/)
 
@@ -550,7 +618,7 @@ include_directories(${PROTO_GEN_CXX_INCLUDE_DIRS})
 
 在需要使用 proto 的目标 CMakeLists.txt 脚本中，只需要目标链接 `proto_gen_cxx` 或 `proto_gen_c` 即可。
 
-### 2.2. cmake生成compile_commands.json
+### 3.2. cmake生成compile_commands.json
 
 通过设置 `CMAKE_EXPORT_COMPILE_COMMANDS` 来让 cmake 生成compile_commands.json。
 
@@ -560,7 +628,7 @@ cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 
 > 注：compile_commands.json 的作用：提高一些 IDE 的代码跳转与补全等功能(如：vscode、ccls、Sourcetrail)。
 
-### 2.3. cmake控制编译顺序
+### 3.3. cmake控制编译顺序
 
 有以下cmake文件：
 
@@ -671,9 +739,9 @@ target_link_libraries(${THIS_PROJECT_NAME} PUBLIC -ldb -lcommon -lproto -lcompon
 
 在主项目的 *CMakeLists.txt* 的 `add_library` 跟 `target_link_libraries` 之间，通过 `add_dependencies` 指明主项目的 target = futc_ems_write 依赖于子项目的 targets = proto、component、common，所以编译时会先编译这些子项目！
 
-## 3. Q&A
+## 4. Q&A
 
-### 3.1. add_custom_command 不执行
+### 4.1. add_custom_command 不执行
 
 原因有两种：
 
