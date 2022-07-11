@@ -86,6 +86,9 @@ git clone --recurse-submodules <主项目地址>
 // 未指定远程分支名，默认 clone master 分支。
 git clone -b 远程分支名 远程仓库地址
 
+// 指定存放目录
+git clone -b 远程分支名 远程仓库地址 存放目录
+
 // 如果已经 clone 了其他分支，可以采用以下方法切换分支
 git branch -a   // 1. 先查看当前远端分支情况
 git checkout origin/xxx     // 2. 选择远端 xxx 分支（origin 为远程仓库别名）
@@ -177,6 +180,7 @@ git push origin
 ### 2.5. reset命令
 
 #### 2.5.1. reset的语法格式与基本用法
+
 *reset* 命令一般结合 *pull* 命令来使用，设置当前节点到指定版本，然后把该版本的代码拉下来，从而达到回退本地代码或更新本地代码的效果。
 
 语法格式：
