@@ -2,29 +2,34 @@
 
 <!-- TOC -->
 
-- [mysql学习笔记](#mysql%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0)
-  - [1. mysql基础操作](#1-mysql%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C)
-    - [1.1. 数据库相关](#11-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9B%B8%E5%85%B3)
-      - [1.1.1. 连接与断开数据库](#111-%E8%BF%9E%E6%8E%A5%E4%B8%8E%E6%96%AD%E5%BC%80%E6%95%B0%E6%8D%AE%E5%BA%93)
-      - [1.1.2. 查看有哪些数据库](#112-%E6%9F%A5%E7%9C%8B%E6%9C%89%E5%93%AA%E4%BA%9B%E6%95%B0%E6%8D%AE%E5%BA%93)
-      - [1.1.3. 创建数据库](#113-%E5%88%9B%E5%BB%BA%E6%95%B0%E6%8D%AE%E5%BA%93)
-      - [1.1.4. 选择数据库](#114-%E9%80%89%E6%8B%A9%E6%95%B0%E6%8D%AE%E5%BA%93)
-    - [1.2. 表相关](#12-%E8%A1%A8%E7%9B%B8%E5%85%B3)
-      - [1.2.1. 数据表的字段类型](#121-%E6%95%B0%E6%8D%AE%E8%A1%A8%E7%9A%84%E5%AD%97%E6%AE%B5%E7%B1%BB%E5%9E%8B)
-        - [1.2.1.1. 数值类型](#1211-%E6%95%B0%E5%80%BC%E7%B1%BB%E5%9E%8B)
-        - [1.2.1.2. 日期和时间类型](#1212-%E6%97%A5%E6%9C%9F%E5%92%8C%E6%97%B6%E9%97%B4%E7%B1%BB%E5%9E%8B)
-        - [1.2.1.3. 字符串类型](#1213-%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%B1%BB%E5%9E%8B)
-      - [1.2.2. 数据表的字段属性](#122-%E6%95%B0%E6%8D%AE%E8%A1%A8%E7%9A%84%E5%AD%97%E6%AE%B5%E5%B1%9E%E6%80%A7)
-        - [1.2.2.1. 主键](#1221-%E4%B8%BB%E9%94%AE)
-        - [1.2.2.2. 外键](#1222-%E5%A4%96%E9%94%AE)
-        - [1.2.2.3. 自动递增](#1223-%E8%87%AA%E5%8A%A8%E9%80%92%E5%A2%9E)
-        - [1.2.2.4. 非空](#1224-%E9%9D%9E%E7%A9%BA)
-        - [1.2.2.5. 唯一性约束](#1225-%E5%94%AF%E4%B8%80%E6%80%A7%E7%BA%A6%E6%9D%9F)
-        - [1.2.2.6. 索引](#1226-%E7%B4%A2%E5%BC%95)
-      - [1.2.3. 创建数据表](#123-%E5%88%9B%E5%BB%BA%E6%95%B0%E6%8D%AE%E8%A1%A8)
-      - [1.2.4. 查看数据表](#124-%E6%9F%A5%E7%9C%8B%E6%95%B0%E6%8D%AE%E8%A1%A8)
-      - [1.2.5. 删除数据表](#125-%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE%E8%A1%A8)
-  - [2. mysql和redis之间的同步方案](#2-mysql%E5%92%8Credis%E4%B9%8B%E9%97%B4%E7%9A%84%E5%90%8C%E6%AD%A5%E6%96%B9%E6%A1%88)
+- [mysql学习笔记](#mysql学习笔记)
+  - [1. mysql基础操作](#1-mysql基础操作)
+    - [1.1. 数据库相关](#11-数据库相关)
+      - [1.1.1. 连接与断开数据库](#111-连接与断开数据库)
+      - [1.1.2. 查看有哪些数据库](#112-查看有哪些数据库)
+      - [1.1.3. 创建数据库](#113-创建数据库)
+      - [1.1.4. 选择数据库](#114-选择数据库)
+    - [1.2. 表相关](#12-表相关)
+      - [1.2.1. 数据表的字段类型](#121-数据表的字段类型)
+        - [1.2.1.1. 数值类型](#1211-数值类型)
+        - [1.2.1.2. 日期和时间类型](#1212-日期和时间类型)
+        - [1.2.1.3. 字符串类型](#1213-字符串类型)
+      - [1.2.2. 数据表的字段属性](#122-数据表的字段属性)
+        - [1.2.2.1. 主键](#1221-主键)
+        - [1.2.2.2. 外键](#1222-外键)
+        - [1.2.2.3. 自动递增](#1223-自动递增)
+        - [1.2.2.4. 非空](#1224-非空)
+        - [1.2.2.5. 唯一性约束](#1225-唯一性约束)
+        - [1.2.2.6. 索引](#1226-索引)
+      - [1.2.3. 创建数据表](#123-创建数据表)
+      - [1.2.4. 查看数据表](#124-查看数据表)
+      - [1.2.5. 删除数据表](#125-删除数据表)
+  - [2. sql函数](#2-sql函数)
+    - [2.1. replace函数](#21-replace函数)
+    - [2.2. current_timestamp函数](#22-current_timestamp函数)
+    - [2.3. unix_timestamp函数](#23-unix_timestamp函数)
+    - [2.4. from_unixtime函数](#24-from_unixtime函数)
+  - [3. mysql和redis之间的同步方案](#3-mysql和redis之间的同步方案)
 
 <!-- /TOC -->
 
@@ -262,10 +267,110 @@
 
     DROP TABLE table_name
 
-## 2. mysql和redis之间的同步方案
+## 2. sql函数
 
-如何保证 mysql 跟 redis 之间的数据一致性。
+### 2.1. replace函数
 
-<https://zhuanlan.zhihu.com/p/365048324>
-<https://cn.bing.com/search?q=%E5%AE%9A%E6%97%B6%E5%90%8C%E6%AD%A5+mysql+%E5%88%B0redis%E4%B8%AD&form=QBLH&sp=-1&pq=%E5%AE%9A%E6%97%B6%E5%90%8C%E6%AD%A5+mysql+%E5%88%B0redis&sc=0-17&qs=n&sk=&cvid=6BD3AB04E84E43DFBBCB8633F1B75A2B>
-<https://cn.bing.com/search?q=%e4%bf%9d%e8%af%81mysql+%e5%92%8c+redis+%e4%b8%80%e8%87%b4%e6%80%a7&qs=RI&pq=redis+%e4%bf%9d%e8%af%81&sc=1-8&cvid=AB4758E0EF2E4379AA8467373767A6D6&FORM=QBLH&sp=1>
+语法：
+
+```sql
+replace(original-string，search-string，replace-string)
+
+# 样例（最终输出："hello"）
+select replace("helloworld world world", "world", "") as 'test';
+```
+
+参数：
+
+- original-string： 被搜索的字符串。可为任意长度。
+- search-string： 要搜索并被 replace-string 替换的字符串。该字符串的长度不应超过 255 个字节。如果 search-string 是空字符串，则按原样返回原始字符串。
+- replace-string： 该字符串用于替换 search-string。可为任意长度。如果 replace-string 是空字符串，则删除出现的所有 search-string。
+
+**作用**：用字符串表达式3替换字符串表达式1中出现的所有字符串表达式2的匹配项。返回新的字符串。如果有某个参数为 NULL，此函数返回 NULL。
+
+### 2.2. current_timestamp函数
+
+语法：
+
+```sql
+current_timestamp(毫秒的位数)
+
+# 样例1（输出当前时间：2022-07-15 15:25:53）
+select current_timestamp() as 'test';
+
+# 样例2（输出当前时间，有1位的毫秒：2022-07-15 15:26:04.0）
+select current_timestamp(1) as 'test';
+
+# 样例3（输出当前时间，有6位的毫秒：2022-07-15 15:25:49.614248）
+select current_timestamp(6) as 'test';
+```
+
+**作用**：输出当前的日期与事件，格式为：%Y-%m-%d %H:%i:%s.%f。
+
+### 2.3. unix_timestamp函数
+
+语法：
+
+```sql
+unix_timestamp([date])
+
+# 样例1（输出：1657870433）
+select unix_timestamp(current_timestamp()) as 'test';
+
+# 样例2（输出：1657870436.907463）
+select unix_timestamp(current_timestamp(6)) as 'test';
+```
+
+**作用**：若不带参数，则返回当前的UNIX时间戳；若带上日期，将日期转换成自 '1970-01-01 00:00:00' 之后的描述。
+
+### 2.4. from_unixtime函数
+
+语法：
+
+```sql
+from_unixtime(unix_timestamp, format)
+
+# 样例1（输出：15:08:55.292253）
+select from_unixtime(unix_timestamp(current_timestamp(6)) - 1800, '%H:%i:%s.%f') as 'test';
+```
+
+format选项如下：
+
+- %M 月名字(January～December)
+- %W 星期名字(Sunday～Saturday)
+- %D 有英语前缀的月份的日期(1st, 2nd, 3rd, 等等。）
+- %Y 年, 数字, 4 位
+- %y 年, 数字, 2 位
+- %a 缩写的星期名字(Sun～Sat)
+- %d 月份中的天数, 数字(00～31)
+- %e 月份中的天数, 数字(0～31)
+- %m 月, 数字(01～12)
+- %c 月, 数字(1～12)
+- %b 缩写的月份名字(Jan～Dec)
+- %j 一年中的天数(001～366)
+- %H 小时(00～23)
+- %k 小时(0～23)
+- %h 小时(01～12)
+- %I 小时(01～12)
+- %l 小时(1～12)
+- %i 分钟, 数字(00～59)
+- %r 时间,12 小时(hh:mm:ss [AP]M)
+- %T 时间,24 小时(hh:mm:ss)
+- %S 秒(00～59)
+- %s 秒(00～59)
+- %p AM或PM
+- %w 一个星期中的天数(0=Sunday ～6=Saturday ）
+- %U 星期(0～52), 这里星期天是星期的第一天
+- %u 星期(0～52), 这里星期一是星期的第一天
+- %% 一个文字%
+- %f 毫秒？
+
+## 3. mysql和redis之间的同步方案
+
+如何保证 mysql 跟 redis 之间的数据一致性？to be continue...
+
+参考链接：
+
+- <https://zhuanlan.zhihu.com/p/365048324>
+- <https://cn.bing.com/search?q=%E5%AE%9A%E6%97%B6%E5%90%8C%E6%AD%A5+mysql+%E5%88%B0redis%E4%B8%AD&form=QBLH&sp=-1&pq=%E5%AE%9A%E6%97%B6%E5%90%8C%E6%AD%A5+mysql+%E5%88%B0redis&sc=0-17&qs=n&sk=&cvid=6BD3AB04E84E43DFBBCB8633F1B75A2B>
+- <https://cn.bing.com/search?q=%e4%bf%9d%e8%af%81mysql+%e5%92%8c+redis+%e4%b8%80%e8%87%b4%e6%80%a7&qs=RI&pq=redis+%e4%bf%9d%e8%af%81&sc=1-8&cvid=AB4758E0EF2E4379AA8467373767A6D6&FORM=QBLH&sp=1>
