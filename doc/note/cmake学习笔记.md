@@ -454,7 +454,7 @@ add_dependencies(<target> [<target-dependency>]...)
 
 #### 3.1.1. 能正常运行的cmake代码
 
-> 详见：[新人练习项目](https://gitlab.futunn.com/arnicedeng/my_practice/-/blob/main/final_day/logic_service/logic/ar_logic/CMakeLists.txt)
+> 详见：[新人练习项目](../etc/cmake/CMakeLists.txt)
 
 Protobuf 的 proto 源文件在 C\C++ 项目构建需要首先通过 protoc 工具生成对应的 C++ 源码文件，然后参与编译过程。将这个工具生成过程也集成到 CMake 构建中会方便 proto 定义变更的及时跟进，也可以将 proto 文件同时纳入版本管理中。
 
