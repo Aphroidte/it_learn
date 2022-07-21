@@ -18,7 +18,7 @@
       - [2.5.1. reset的语法格式与基本用法](#251-reset的语法格式与基本用法)
       - [2.5.2. reset的样例](#252-reset的样例)
         - [2.5.2.1. 拉取代码到最新版本](#2521-拉取代码到最新版本)
-        - [拉取代码到指定版本](#拉取代码到指定版本)
+        - [2.5.2.2. 拉取代码到指定版本](#2522-拉取代码到指定版本)
   - [3. git配置SSH](#3-git配置ssh)
     - [3.1. git配置SSH时遇到的问题](#31-git配置ssh时遇到的问题)
       - [3.1.1. clone时反复要求输入密码，无论输入的密码是否正确都会报错](#311-clone时反复要求输入密码无论输入的密码是否正确都会报错)
@@ -27,6 +27,7 @@
     - [4.1. remote: Support for password authentication was removed on August 13, 2021. Please use a perso](#41-remote-support-for-password-authentication-was-removed-on-august-13-2021-please-use-a-perso)
       - [4.1.1. 生成个人令牌](#411-生成个人令牌)
       - [4.1.2. 使用个人令牌](#412-使用个人令牌)
+    - [4.2. clone时报错：Failed to connect to 127.0.0.1 port 4780 after 2038 ms: Connection refused](#42-clone时报错failed-to-connect-to-127001-port-4780-after-2038-ms-connection-refused)
 
 <!-- /TOC -->
 
@@ -223,7 +224,7 @@ git reset --hard origin/master(或 origin/HEAD)
 git pull
 ```
 
-##### 拉取代码到指定版本
+##### 2.5.2.2. 拉取代码到指定版本
 
 ```bash
 git fetch -f
@@ -242,7 +243,9 @@ git pull
 
 报的错误：
 
-    permission denied (publickey,keyboard-interactive).
+```txt
+permission denied (publickey,keyboard-interactive).
+```
 
 解决办法：将密钥换成 `ed25519` 类型的密钥即可。
 
@@ -250,13 +253,17 @@ git pull
 
 报错信息如下：
 
-    permissions 0644 for '/home/arnicedeng/.ssh/id_ed25519' are too open. it is required that your private key files are not accessible by others. this private key will be ignored.
+```txt
+permissions 0644 for '/home/arnicedeng/.ssh/id_ed25519' are too open. it is required that your private key files are not accessible by others. this private key will be ignored.
+```
 
 以上错误的意思是：私钥文件不能被其他人所访问。私钥是访问linux服务器的凭证，如果被别人获取到，就可能对服务器安全造成影响，这可能也就是这个问题的初衷。
 
 根据提示，将私钥文件的权限改成 600 即可。使用命令：
 
-    chmod 600 私钥文件
+```txt
+chmod 600 私钥文件
+```
 
 ## 4. Q&A
 
@@ -282,6 +289,23 @@ git pull
 
 ```bash
 git remote set-url origin  https://<your_token>@github.com/<USERNAME>/<REPO>.git
+```
+
+### 4.2. clone时报错：Failed to connect to 127.0.0.1 port 4780 after 2038 ms: Connection refused
+
+完整的报错：
+
+```txt
+fatal: unable to access '[git仓库链接]': Failed to connect to 127.0.0.1 port 4780 after 2038 ms: Connection refused
+```
+
+原因：一般是配置了全局的 *http* 代理。可以使用 `git config --list` 命令查看 *git* 的 *http* 代理。
+
+解决办法：去除全局代理的配置：
+
+```bash
+git config --global --unset http.proxy  
+git config --global --unset https.proxy
 ```
 
 <!-- 以下是图片资源 
