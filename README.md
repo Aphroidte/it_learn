@@ -21,6 +21,8 @@ it相关的工具以及知识学习笔记
 - 分布式系统组件
   - 消息队列
     - [什么是消息队列](doc/note/third_party/mq/什么是消息队列.md)
+  - rpc
+    - [srpc学习笔记](doc/note/third_party/rpc/srpc学习笔记.md)
 - [git学习笔记](./doc/note/git学习笔记.md)
 - [cmake学习笔记](./doc/note/cmake学习笔记.md)
 - [latex学习笔记](./doc/note/latex%E5%85%AC%E5%BC%8F%E8%AF%AD%E6%B3%95.md)
